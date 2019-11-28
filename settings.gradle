@@ -46,6 +46,21 @@ gradleEnterprise {
     }
 }
 
+def flags = BuildPropertiesKt.getKotlinBuildPropertiesForSettings(settings)
+
+buildCache {
+    if (flags.isTeamcityBuild) {
+        local {
+            enabled = false
+        }
+
+        remote(HttpBuildCache) {
+            url = 'http://gradle-build-cache.local/cache/'
+            push = true
+        }
+    }
+}
+
 // modules
 include ":kotlin-build-common",
         ":benchmarks",
@@ -269,8 +284,6 @@ include ":kotlin-build-common",
         ":kotlin-serialization",
         ":kotlin-serialization-unshaded",
         ":kotlin-serialization:plugin-marker"
-
-def flags = BuildPropertiesKt.getKotlinBuildPropertiesForSettings(settings)
 
 if (flags.includeCidrPlugins) {
     logger.info("Including CIDR plugins in settings.gradle")
