@@ -453,7 +453,7 @@ class RawFirBuilder(session: FirSession, val stubMode: Boolean) : BaseFirBuilder
                 source = toFirSourceElement(),
                 session,
                 FirAnonymousObjectSymbol(),
-                classKind = ClassKind.ENUM_ENTRY
+                ClassKind.ENUM_ENTRY
             )
 
             extractSuperTypeListEntriesTo(obj, null, delegatedEnumSelfTypeRef, ClassKind.ENUM_ENTRY)
