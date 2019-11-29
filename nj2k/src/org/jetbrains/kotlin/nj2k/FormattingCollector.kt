@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.nj2k
 
-import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.*
 import com.intellij.psi.javadoc.PsiDocComment
@@ -55,14 +54,12 @@ class FormattingCollector {
         return token
     }
 
-    private fun PsiComment.indent(): String? {
-        val prevSibling = prevSibling as? PsiWhiteSpace ?: return null
-        val indent = prevSibling.text ?: return null
-        if (parent !is PsiCodeBlock || !StringUtil.containsLineBreak(indent)) return null
-        return if (indent.isEmpty() || prevSibling.prevSibling?.safeAs<ASTNode>()?.elementType == JavaTokenType.LBRACE)
-            indent
+    private fun PsiComment.indent(): String? = takeIf { parent is PsiCodeBlock }?.prevSibling?.safeAs<PsiWhiteSpace>()?.let { space ->
+        val text = space.text
+        if (space.prevSibling is PsiStatement)
+            text.indexOfFirst(StringUtil::isLineBreak).takeIf { it != -1 }?.let { text.substring(it + 1) } ?: text
         else
-            indent.substring(1)
+            text
     }
 
     private fun Sequence<PsiElement>.toComments(): List<JKComment> =
